@@ -1,4 +1,6 @@
-# Parser_Spice
+# SPICE Netlist Validator
+
+Nome histórico: **Parser_Spice**. A reorganização preserva o histórico Git e o nome do executável `Parser_Spice` para compatibilidade.
 
 Validador de sintaxe de netlists SPICE em C++. O programa lê um arquivo de circuito, separa os tokens e aplica verificações específicas para componentes e diretivas, imprimindo diagnósticos com referências à linha de entrada.
 

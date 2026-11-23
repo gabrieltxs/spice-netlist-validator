@@ -3,8 +3,8 @@
 
 class Circuito {
 public:
-    Circuito();
-    ~Circuito();
+    Circuito() = default;
+    ~Circuito() = default;
     void runFile(std::string filename);
     void setLine_from_ckt(std::string argumento);
     std::string parseCircuit(std::map<std::string, std::string> argumento,

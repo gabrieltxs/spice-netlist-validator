@@ -7,8 +7,8 @@
 
 class parser {
 public:
-    parser();
-    ~parser();
+    parser() = default;
+    ~parser() = default;
     void errorPointer(std::map<std::string, std::string> tokens, int linha, std::string argumento, std::string generalForm, std::string currentToken, std::string msgErro);
     void floatValidator_wSymbol(std::string value, std::map<std::string, std::string> tokens, int linha, std::string argumento, std::string generalForm, std::string currentToken);
     void intValidator(std::string value, std::map<std::string, std::string> tokens, int linha, std::string argumento, std::string generalForm, std::string currentToken);

@@ -1,4 +1,4 @@
-# Arquitetura e limites
+# SPICE Netlist Validator — arquitetura e limites
 
 ## Fluxo
 
@@ -30,3 +30,7 @@ Não houve reimplementação da gramática inteira. Os validadores numéricos re
 Muitos handlers imprimem erros mas retornam `ok`; `runFile` captura erros de parênteses para exibi-los. Portanto, um processo terminado com código 0 não garante que todos os diagnósticos de sintaxe estejam ausentes. Um futuro trabalho separado pode definir um resultado estruturado e unificar os códigos de saída, com regressões para todas as regras.
 
 O teste automatizado cobre o conjunto listado no README, não conformidade completa com SPICE. Não há cálculo elétrico, resultado de simulação ou alegação de compatibilidade integral com ngspice/LTspice.
+
+## Nome e migração
+
+O projeto foi apresentado originalmente como `Parser_Spice`; o nome público passa a ser **SPICE Netlist Validator**, que descreve a validação de netlists sem sugerir um simulador. O slug planejado é `spice-netlist-validator`. O executável `Parser_Spice` e as opções `-f`/`--filename` continuam disponíveis. A renomeação remota é coordenada separadamente da revisão desta branch.

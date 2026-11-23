@@ -5,16 +5,6 @@
 #include <vector>
 #include <cctype>
 
-// Destructor for the Circuito class
-Circuito::~Circuito()
-{
-}
-
-// Constructor for the Circuito class
-Circuito::Circuito()
-{
-}
-
 // Function to parse a circuit based on the input arguments
 std::string Circuito::parseCircuit(std::map<std::string, std::string> argumento, int linha, std::string argC, int qtd_TOKEN)
 {

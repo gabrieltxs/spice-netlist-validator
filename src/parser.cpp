@@ -1,13 +1,6 @@
 #include "parser.h"
 #include "Console.h"
 
-parser::parser()
-{
-}
-
-parser::~parser()
-{
-}
 void parser::errorPointer(std::map<std::string, std::string> tokens, int linha, std::string argumento, std::string generalForm, std::string currentToken, std::string msgErro)
 {
 

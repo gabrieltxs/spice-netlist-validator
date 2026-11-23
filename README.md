@@ -1,68 +1,53 @@
 # Parser_Spice
-O Parser_Spice é um programa em C++ projetado para analisar e processar arquivos de netlist SPICE (Simulation Program with Integrated Circuit Emphasis). Este programa é capaz de interpretar arquivos de entrada SPICE e extrair informações relevantes do circuito, tornando-o uma ferramenta útil para simular circuitos eletrônicos.
 
-## Introdução
-O SPICE é uma ferramenta amplamente utilizada na simulação de circuitos eletrônicos, e este parser tem como objetivo simplificar o processo de leitura e interpretação de arquivos de netlist SPICE. Ele pode ser usado para diversas finalidades, como análise, simulação e teste de circuitos.
+Validador de sintaxe de netlists SPICE em C++. O programa lê um arquivo de circuito, separa os tokens e aplica verificações específicas para componentes e diretivas, imprimindo diagnósticos com referências à linha de entrada.
 
-## Como Usar
-Para usar o programa Parser_Spice, siga estas etapas:
+**Este projeto não é um simulador elétrico:** não monta matrizes, calcula tensões/correntes nem executa análises AC/DC/transitórias. É uma implementação acadêmica de análise léxica e sintática, com uma gramática parcial.
 
-Clone ou baixe o repositório para a sua máquina local.
+## Compilar e executar
 
-Compile o programa usando o compilador C++ de sua preferência.
+Requisitos: compilador C++11 (GCC ou Clang) e GNU Make. Python 3 é necessário apenas para executar os testes. Não há dependências externas de C++.
 
-Execute o programa e forneça o arquivo de netlist SPICE como argumento:
+```sh
+make
+./build/Parser_Spice examples/rc.ckt
+# Formas alternativas, mantidas para compatibilidade:
+./build/Parser_Spice -f examples/rc.ckt
+./build/Parser_Spice --filename examples/rc.ckt
+make test
+```
 
-bash
-Copy code
-./Parser_Spice seu_circuito.ckt
-O programa irá analisar o netlist SPICE, processar os elementos do circuito e exibir os resultados.
+Sem Make, a compilação equivalente é:
 
-## Elementos Suportados
-O parser suporta uma ampla variedade de elementos de circuitos SPICE, incluindo:
+```sh
+c++ -std=c++11 -Wall -Wextra -pedantic -Iinclude src/main.cpp src/Circuito.cpp src/parser.cpp -o Parser_Spice
+```
 
-Resistores (R)
-Capacitores (C)
-Indutores (L)
-Fontes de tensão (V)
-Fontes de corrente (I)
-Fontes de corrente controladas por tensão (G, E)
-Fontes de corrente controladas por corrente (F, H)
-Diodos (D)
-Transistores bipolares de junção (BJT - Q)
-Transistores de efeito de campo de junção (JFET - J)
-Transistores de efeito de campo metal-óxido-semicondutor (MOSFET - M)
-Subcircuitos (.SUBCKT)
-Fim de subcircuitos (.ENDS)
-Chamadas de subcircuitos (X)
-Configurações de opções (.OPTIONS)
-Comandos de definição de nós (.NODESET)
-Condições iniciais (.IC)
-Análise AC (.AC)
-Análise DC (.DC)
-Análise de polos e zeros (.PZ)
-Análise de sensibilidade (.SENS)
-Análise de função de transferência (.TF)
-Análise transitória (.TRAN)
-Declarações de impressão (.PRINT)
+O primeiro registro do arquivo é sempre tratado como título. Use nomes de elementos e diretivas em maiúsculas; linhas de comentário começam com `*`, opcionalmente após espaços. O arquivo deve terminar com `.END`. Veja o exemplo RC incluído.
 
-## Tratamento de Erros
-O parser inclui tratamento de erros para detectar e relatar vários erros de sintaxe e lógica no netlist SPICE. Ele fornece mensagens de erro informativas, incluindo números de linha e coluna, para ajudar os usuários a identificar e corrigir problemas em suas descrições de circuito.
+O programa imprime o título e eventuais diagnósticos. Erros de argumentos e de abertura do arquivo retornam código 1; ajuda retorna 0. **Os diagnósticos de sintaxe herdados ainda não produzem um código de saída de falha consistente**: não use apenas `$?` como certificado de validade do circuito.
 
-## Contribuições
-Contribuições para este projeto são bem-vindas! Se você deseja contribuir, siga estas etapas:
+## Organização
 
-Faça um fork do repositório.
+```text
+src/             entrada CLI, tokenização/despacho e regras de validação
+include/         declarações das classes e adaptação de cores do console
+examples/        netlist pequeno, sem dados externos
+tests/          testes de regressão da CLI (biblioteca padrão Python)
+docs/            arquitetura, limitações e alterações de comportamento
+Makefile         compilação e execução dos testes
+```
 
-Crie um novo branch para sua funcionalidade ou correção de bug.
+## Escopo das regras
 
-Faça suas alterações e faça commit delas com mensagens de commit claras e concisas.
+O despacho contém verificações para `R`, `C`, `L`, fontes `V/I`, `G/E`, `F/H`, `D`, `Q`, `J`, `M`, chamadas `X` e diretivas `.SUBCKT`, `.ENDS`, `.END`, `.OPTIONS`, `.NODESET`, `.IC`, `.AC`, `.DC`, `.PZ`, `.SENS`, `.TF`, `.TRAN` e `.PRINT`. A presença de um handler **não significa suporte completo ao padrão SPICE**. `.SAVE` é ignorado.
 
-Faça push das suas alterações para o seu fork.
+Os validadores de números, unidades, quantidade de argumentos e nós têm limitações históricas; expressões arbitrárias, modelos `.MODEL`, arquivos `.INCLUDE`, continuação de linhas com `+` e compatibilidade com todos os dialetos não são oferecidos. A checagem `.PRINT` é parcial, embora agora termine e use índices de tokens corretos. Veja [arquitetura e limitações](docs/ARCHITECTURE.md).
 
-Crie uma solicitação pull para o branch develop do repositório principal.
+## Testes e manutenção
 
-## Licença
-Este projeto está licenciado sob a Licença MIT, o que significa que você tem a liberdade de usar e modificar o código para seus próprios fins. No entanto, revise a licença para obter detalhes completos e responsabilidades.
+`make test` cobre os formatos da CLI, arquivos inexistentes, linhas vazias, CRLF, comentários, pontuação, terminação de `.PRINT`, parênteses, ausência de `.END` e referências de linha. O timeout de cada processo também detecta regressões que provoquem loops infinitos.
 
-Obrigado por usar o Parser_Spice! Se você tiver alguma dúvida ou encontrar problemas, sinta-se à vontade para abrir uma issue no GitHub.
+As regras históricas são mantidas em `src/parser.cpp`. Correções da gramática devem incluir exemplos válidos e inválidos e registrar mudanças na saída. Não substitua este projeto por um simulador SPICE na mesma alteração.
+
+Licença MIT, conforme o cabeçalho original, reproduzida em [LICENSE](LICENSE).

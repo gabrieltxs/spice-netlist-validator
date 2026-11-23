@@ -1,31 +1,23 @@
-//#include "parser.h"
-#include "windows.h"
-#include "Circuito.h"
+#include "parser.h"
+#include "Console.h"
 
-parser::parser()
-{
-}
-
-parser::~parser()
-{
-}
 void parser::errorPointer(std::map<std::string, std::string> tokens, int linha, std::string argumento, std::string generalForm, std::string currentToken, std::string msgErro)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, 12); //vermelho
+
+    setConsoleColor(12); //vermelho
     std::string spaces;
-    for (int i = 0; i < argumento.find(tokens[currentToken]); i++)
-        spaces += ' ';
+    const auto position = argumento.find(tokens[currentToken]);
+    spaces.assign(position == std::string::npos ? 0 : position, ' ');
     spaces += '^';
     std::cout << "\nparserError:";
-    SetConsoleTextAttribute(hConsole, 7); //branco
+    setConsoleColor(7); //branco
     std::cout << "line " << linha + 1 << ". "
               << generalForm << ".\n"
               << argumento << "\n"
               << spaces << std::endl;
-    SetConsoleTextAttribute(hConsole, 9); //azul
+    setConsoleColor(9); //azul
     std::cout << msgErro;
-    SetConsoleTextAttribute(hConsole, 7); //branco
+    setConsoleColor(7); //branco
     std::cout << "\n\n"
               << std::endl;
     spaces = "";
@@ -35,7 +27,7 @@ void parser::floatValidator_wSymbol(std::string value, std::map<std::string, std
 {
     //std::cout<<tokens["token3"]<<std::endl;
     std::string spaces;
-    for (int i = 0; i < (value.length()); i++)
+    for (std::size_t i = 0; i < value.length(); i++)
     {
         try
         {
@@ -80,7 +72,7 @@ void parser::intValidator(std::string value, std::map<std::string, std::string> 
 {
     //std::cout<<tokens["token3"]<<std::endl;
     std::string spaces;
-    for (int i = 0; i < (value.length()); i++)
+    for (std::size_t i = 0; i < value.length(); i++)
     {
         try
         {
@@ -212,9 +204,9 @@ std::string parser::sourceVI(std::map<std::string, std::string> tokens, int linh
     std::string spaces = "";
     std::string generalForm;
     std::string token0 = tokens["token0"];
-    if (token0[0] = 'V')
+    if (token0[0] == 'V')
         generalForm = "General form: VXXXXXXX N+ N- < DC/TRAN VALUE>";
-    if (token0[0] = 'I')
+    if (token0[0] == 'I')
         generalForm = "General form: IXXXXXXX N+ N- < DC/TRAN VALUE>";
 
     std::string parameter_tk;
@@ -233,38 +225,38 @@ std::string parser::sourceVI(std::map<std::string, std::string> tokens, int linh
         else
         {
             if (tokens["token3"] != "COMPLEX"){
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-            SetConsoleTextAttribute(hConsole, 12); //vermelho
+
+            setConsoleColor(12); //vermelho
                 std::cout << "\nparserError:";
-            SetConsoleTextAttribute(hConsole, 7); //branco
+            setConsoleColor(7); //branco
 
             std::cout << "line " + std::to_string(linha + 1) +
                              ". Unknown command." + generalForm +
                              "\n" + argumento;
-            SetConsoleTextAttribute(hConsole, 9); //azul
+            setConsoleColor(9); //azul
             std::cout << "\nDo you mean 'COMPLEX'?" << std::endl;
-            SetConsoleTextAttribute(hConsole, 7); //branco
+            setConsoleColor(7); //branco
             }
         }
     }
     catch (const std::exception &msg)
     {
-        for (int i = 0; i < argumento.find(tokens["token3"]); i++)
-            spaces += ' ';
+        const auto position = argumento.find(tokens["token3"]);
+        spaces.assign(position == std::string::npos ? 0 : position, ' ');
         spaces += '^';
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-        SetConsoleTextAttribute(hConsole, 12); //vermelho
+
+        setConsoleColor(12); //vermelho
         std::cout << "\nparserError: ";
-        SetConsoleTextAttribute(hConsole, 7); //branco
+        setConsoleColor(7); //branco
         std::cout << "line " << linha + 1 << ". "
                   << generalForm << ".\n"
                   << argumento << ""
                                   "\n"
                   << spaces << std::endl;
-        SetConsoleTextAttribute(hConsole, 9); //azul
+        setConsoleColor(9); //azul
         std::cout << "value must be float.\n\n"
                   << std::endl;
-        SetConsoleTextAttribute(hConsole, 7); //branco
+        setConsoleColor(7); //branco
         spaces = "";
         return "invalid source display";
     }
@@ -295,9 +287,9 @@ std::string parser::sourceGE(std::map<std::string, std::string> tokens, int linh
     std::string spaces = "";
     std::string generalForm;
     std::string token0 = tokens["token0"];
-    if (token0[0] = 'G')
+    if (token0[0] == 'G')
         generalForm = "General form: GXXXXXXX N+ N- < DC/TRAN VALUE>";
-    if (token0[0] = 'E')
+    if (token0[0] == 'E')
         generalForm = "General form: EXXXXXXX N+ N- < DC/TRAN VALUE>";
 
     std::string parameter_tk;
@@ -324,9 +316,9 @@ std::string parser::sourceFH(std::map<std::string, std::string> tokens, int linh
     std::string spaces = "";
     std::string generalForm;
     std::string token0 = tokens["token0"];
-    if (token0[0] = 'F')
+    if (token0[0] == 'F')
         generalForm = " FXXXXXXX N+ N- VNAM VALUE";
-    if (token0[0] = 'H')
+    if (token0[0] == 'H')
         generalForm = " HXXXXXXX N+ N- VNAM VALUE";
 
     std::string parameter_tk;
@@ -715,7 +707,7 @@ std::string parser::options(std::map<std::string, std::string> tokens, int linha
     {
         return "Invalid OPTIONS display\n";
     }
-    for (size_t i = 1; i < qtd_TOKEN; i++)
+    for (int i = 1; i < qtd_TOKEN; i++)
     {
         parameter_tk = "token" + std::to_string(i);
         if (tokens[parameter_tk] == "ABSTOL" || tokens[parameter_tk] == "BADMOS3" || tokens[parameter_tk] == "CHGTOL" || tokens[parameter_tk] == "DEFAD" ||
@@ -1083,13 +1075,13 @@ std::string parser::print(std::map<std::string, std::string> tokens, int linha, 
         msgErro = "Wrong definition '" + (tokens[parameter_tk]) + "' , did you mean DC | AC | TRAN | NOISE | DISTO ? ";
         errorPointer(tokens, linha, argumento, generalForm, parameter_tk, msgErro);
     }
-    for (int i = 2; i < qtd_TOKEN;)
+    for (int i = 2; i < qtd_TOKEN; ++i)
     {
-        if (tokens["token" + i][0] == 'I')
+        if (tokens["token" + std::to_string(i)][0] == 'I')
         {
-            if (tokens["token" + (i + 1)][0] != 'V')
+            if (tokens["token" + std::to_string(i + 1)][0] != 'V')
             {
-                msgErro = "Wrong definition '" + (tokens["token" + (i + 1)]) + "' , did you mean I(VXXXXXXX) ? ";
+                msgErro = "Wrong definition '" + (tokens["token" + std::to_string(i + 1)]) + "' , did you mean I(VXXXXXXX) ? ";
                 errorPointer(tokens, linha, argumento, generalForm, parameter_tk, msgErro);
             }
         }
